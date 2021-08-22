@@ -28,9 +28,8 @@ class SiteManagerPlugin(object):
         ###
 
         current_dir = os.path.dirname(os.path.realpath(__file__))
-        print(current_dir)
         p = subprocess.Popen([os.path.join(current_dir, "Electrum-NMC-3.3.10","run_electrum_nmc"),"daemon","-P"])
-        print(p)
+        print(p.pid)
 
         url = "%(host)s:%(port)s" % {"host": host, "port": port}
         self.c = HTTPConnection(url, timeout=3)
