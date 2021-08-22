@@ -14,16 +14,27 @@ class SiteManagerPlugin(object):
         super(SiteManagerPlugin, self).load(*args, **kwargs)
         self.log = logging.getLogger("ElectrumNMC Plugin")
         self.error_message = None
-        self.host = "127.0.0.1"
-        self.port = 8336
+        
+        host = "127.0.0.1"
+        port = 40089
+        # We can read the config file in `./Electrum-NMC-3.3.10/electrum_nmc_data`
+        rpcuser = 'lola'
+        rpcpassword = 'notsecure'
 
-        kek = subprocess.Popen(["./Electrum-NMC-3.3.10","daemon","-P"])
+        ###
+        # Call our local electrum-nmc (./Electrum-NMC-3.3.10) binary
+        # Verify if others plugins like ZeronameLocal is disabled to avoid conflict
+        # Kill our electrum-nmc process when stopping ZeroNet
+        ###
 
-        print(kek)
+        current_dir = os.path.dirname(os.path.realpath(__file__))
+        print(current_dir)
+        p = subprocess.Popen([os.path.join(current_dir, "Electrum-NMC-3.3.10","run_electrum_nmc"),"daemon","-P"])
+        print(p)
 
-        url = "%(host)s:%(port)s" % {"host": self.host, "port": self.port}
+        url = "%(host)s:%(port)s" % {"host": host, "port": port}
         self.c = HTTPConnection(url, timeout=3)
-        user_pass = "%(user)s:%(password)s" % {"user": config.namecoin_rpcuser, "password": config.namecoin_rpcpassword}
+        user_pass = "%(user)s:%(password)s" % {"user": rpcuser, "password": rpcpassword}
         userAndPass = b64encode(bytes(user_pass, "utf-8")).decode("ascii")
         self.headers = {"Authorization" : "Basic %s" %  userAndPass, "Content-Type": " application/json " }
 
