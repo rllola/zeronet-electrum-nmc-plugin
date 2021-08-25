@@ -13,5 +13,7 @@ The plugin should activated. Make sure you don't have `ZeronameLocal` enabled at
 
 ## TODO
 
-- Complete plugin worflow to start electrum-nmc
+- ~~Complete plugin worflow to start electrum-nmc~~
 - Create plugin site
+- Save electrum data in the ZeroNet data folder
+- Find how to serve the electrum NMC files

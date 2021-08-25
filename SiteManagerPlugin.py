@@ -1,4 +1,4 @@
-import logging, json, os, re, sys, time, socket
+import logging, json, os, re, sys, time, socket, signal
 from Plugin import PluginManager
 from Config import config
 from Debug import Debug
@@ -10,26 +10,38 @@ allow_reload = False # No reload supported
 
 @PluginManager.registerTo("SiteManager")
 class SiteManagerPlugin(object):
+    def __del__(self):
+        if self.electrum_pid:
+            os.kill(self.electrum_pid, signal.SIGTERM)
+            self.log.debug("Kill electrum pid : {}".format(self.namecoin_pid))
+            return
+
     def load(self, *args, **kwargs):
         super(SiteManagerPlugin, self).load(*args, **kwargs)
-        self.log = logging.getLogger("ElectrumNMC Plugin")
+        self.log = logging.getLogger("ZeronameElectrumNMC Plugin")
         self.error_message = None
+        self.electrum_pid = None
+
+        electrum_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Electrum-NMC-3.3.10")
+
+        p = subprocess.Popen([os.path.join(electrum_dir, "run_electrum_nmc"),"daemon","-P"])
+        self.electrum_pid = p.pid
+
+        # Need to wait for daemon file to be updated
+        time.sleep(2)
+
+        electrum_data_dir = os.path.join(electrum_dir, "electrum_nmc_data")
+
+        with open(os.path.join(electrum_data_dir, "daemon")) as daemon_file:
+            daemon_config = daemon_file.read().replace("(", "").replace(")","").split(",")
+            host = daemon_config[0].replace("'", "")
+            port = int(daemon_config[1])
+
+        with open(os.path.join(electrum_data_dir, "config")) as config_file:
+            config_rpc = json.loads(config_file.read())
+            rpcuser = config_rpc["rpcuser"]
+            rpcpassword = config_rpc["rpcpassword"]
         
-        host = "127.0.0.1"
-        port = 40089
-        # We can read the config file in `./Electrum-NMC-3.3.10/electrum_nmc_data`
-        rpcuser = 'lola'
-        rpcpassword = 'notsecure'
-
-        ###
-        # Call our local electrum-nmc (./Electrum-NMC-3.3.10) binary
-        # Verify if others plugins like ZeronameLocal is disabled to avoid conflict
-        # Kill our electrum-nmc process when stopping ZeroNet
-        ###
-
-        current_dir = os.path.dirname(os.path.realpath(__file__))
-        p = subprocess.Popen([os.path.join(current_dir, "Electrum-NMC-3.3.10","run_electrum_nmc"),"daemon","-P"])
-        print(p.pid)
 
         url = "%(host)s:%(port)s" % {"host": host, "port": port}
         self.c = HTTPConnection(url, timeout=3)
