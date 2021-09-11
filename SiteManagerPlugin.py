@@ -22,7 +22,7 @@ class SiteManagerPlugin(object):
         self.error_message = None
         self.electrum_pid = None
 
-        electrum_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Electrum-NMC-3.3.10")
+        electrum_dir = os.path.join(os.path.dirname(os.path.realpath(__file__)), "Electrum-NMC")
 
         p = subprocess.Popen([os.path.join(electrum_dir, "run_electrum_nmc"),"daemon","-P"])
         self.electrum_pid = p.pid

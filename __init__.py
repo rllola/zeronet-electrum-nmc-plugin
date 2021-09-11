@@ -1,6 +1,6 @@
 import os
 
-eletrum_path = os.path.join(os.path.dirname(__file__),'Electrum-NMC-3.3.10')
+eletrum_path = os.path.join(os.path.dirname(__file__),'Electrum-NMC')
 
 # Install zip
 if not os.path.exists(eletrum_path):
