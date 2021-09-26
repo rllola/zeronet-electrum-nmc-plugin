@@ -2,5 +2,5 @@
 	"name": "ZeronameElectrumNMC",
 	"description": "ElectrumNMC for ZeroNet decentralized DNS.",
 	"default": "enabled",
-	"rev": 1
+	"rev": 2
 }
