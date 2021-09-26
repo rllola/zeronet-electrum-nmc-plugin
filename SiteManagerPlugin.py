@@ -28,7 +28,7 @@ class SiteManagerPlugin(object):
         self.electrum_pid = p.pid
 
         # Need to wait for daemon file to be updated
-        time.sleep(2)
+        time.sleep(5)
 
         electrum_data_dir = os.path.join(electrum_dir, "electrum_nmc_data")
 
